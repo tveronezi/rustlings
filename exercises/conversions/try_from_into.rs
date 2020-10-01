@@ -11,8 +11,6 @@ struct Color {
     blue: u8,
 }
 
-// I AM NOT DONE
-
 // Your task is to complete this implementation
 // and return an Ok result of inner type Color.
 // You need create implementation for a tuple of three integer,
@@ -26,6 +24,15 @@ struct Color {
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = String;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        let is_ok = |v| v > -1 && v < 256;
+        match tuple {
+            (r, g, b) if is_ok(r) && is_ok(g) && is_ok(b) => Ok(Color {
+                red: r as u8,
+                green: g as u8,
+                blue: b as u8
+            }),
+            (r, g, b) => Err(format!("Bad rgb ({}, {}, {})", r, g, b))
+        }
     }
 }
 
@@ -33,6 +40,7 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = String;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        Self::try_from_slice(&arr[..])
     }
 }
 
@@ -40,6 +48,21 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = String;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        Self::try_from_slice(slice)
+    }
+}
+
+impl Color {
+    fn try_from_slice(s: &[i16]) -> Result<Self, String> {
+        let is_ok = |v: i16| v > -1 && v < 256;
+        match s {
+            [r, g, b]  if is_ok(*r) && is_ok(*g) && is_ok(*b) => Ok(Color {
+                red: *r as u8,
+                green: *g as u8,
+                blue: *b as u8
+            }),
+            _ =>  Err(format!("Bad rgb {:?}", s))
+        }
     }
 }
 
