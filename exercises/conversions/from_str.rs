@@ -10,7 +10,6 @@ struct Person {
     age: usize,
 }
 
-// I AM NOT DONE
 // Steps:
 // 1. If the length of the provided string is 0, then return an error
 // 2. Split the given string on the commas present in it
@@ -23,6 +22,21 @@ struct Person {
 impl FromStr for Person {
     type Err = String;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        let values = s.trim().split(",").collect::<Vec<&str>>();
+        match &values[..] { // <- the same as -> values.as_slice()
+            [name_str, age_str] if name_str.trim() != "" => {
+                let name = String::from(name_str.trim());
+                let age = age_str.trim().parse();
+                match age {
+                    Ok(age) => Ok(Person {
+                        name,
+                        age
+                    }),
+                    Err(_) => Err(format!("Impossible to convert {} to usize", age_str))
+                }
+            },
+            _ => Err(String::from(format!("Your person string looks funny. '{}'", s)))
+        }
     }
 }
 
